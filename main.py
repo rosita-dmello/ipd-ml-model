@@ -11,7 +11,23 @@ from pydantic import BaseModel
 model = pickle.load(open('model.sav', 'rb'))
 print(type(model))
 from fastapi import FastAPI, Path
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
+
+origins = [
+    "http://localhost:3000",
+    "http://localhost:3000/",
+    "http://localhost",
+    "http://localhost:8080",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 @app.get("/")
 def home():
     return {
@@ -42,6 +58,7 @@ def get_result(lang_vocab, memory, speed, visual, audio, survey):
 
 @app.post("/result")
 def result(scores:Item):
+
     return get_result(scores.language, scores.memory, scores.speed, scores.visual, scores.audio, scores.survey)
     
 
